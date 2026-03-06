@@ -33,9 +33,11 @@ ARG BUILD_VERSION=dev
 # Dependency versions
 ARG S6_OVERLAY_VERSION=3.1.6.2
 
-# Setup Qemu
-ARG QEMU_ARCH=x86_64
-COPY .docker/_tmp/qemu-${QEMU_ARCH}-static /usr/bin/qemu-${QEMU_ARCH}-static
+# QEMU static binaries used to be copied from `.docker/_tmp`.
+# Modern Docker/buildx setups provide emulation via binfmt automatically,
+# and local `docker compose build` does not prepare `.docker/_tmp`.
+# Keeping this stage free of local QEMU artifacts avoids hard build failures
+# when building native images.
 
 # Install base system
 ARG BUILD_ARCH=amd64
