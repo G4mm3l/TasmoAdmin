@@ -8,6 +8,13 @@ use TasmoAdmin\Helper\ViewHelper;
 $urlHelper = $container->get(UrlHelper::class);
 $viewHelper = $container->get(ViewHelper::class);
 
+$hasCompiledJsAssets = file_exists(_RESOURCESDIR_.'js/compiled/vendor.js')
+    && file_exists(_RESOURCESDIR_.'js/compiled/Sonoff.js')
+    && file_exists(_RESOURCESDIR_.'js/compiled/app.js');
+
+$hasCompiledCssAsset = file_exists(_RESOURCESDIR_.'css/compiled/all.css');
+$hasLegacyCssAsset = file_exists(_RESOURCESDIR_.'css/all.css');
+
 ?>
 <html lang="<?php echo $lang; ?>" xmlns="http://www.w3.org/1999/html">
 	<head>
@@ -45,12 +52,24 @@ $viewHelper = $container->get(ViewHelper::class);
                 request_concurrency: <?php echo $Config->getRequestConcurrency(); ?>,
             };
 		</script>
-		<script src="<?php echo $urlHelper->js('compiled/vendor'); ?>"></script>
-		<script src="<?php echo $urlHelper->js('compiled/Sonoff'); ?>"></script>
-		<script src="<?php echo $urlHelper->js('compiled/app'); ?>"></script>
+		<?php if ($hasCompiledJsAssets) { ?>
+			<script src="<?php echo $urlHelper->js('compiled/vendor'); ?>"></script>
+			<script src="<?php echo $urlHelper->js('compiled/Sonoff'); ?>"></script>
+			<script src="<?php echo $urlHelper->js('compiled/app'); ?>"></script>
+		<?php } else { ?>
+			<script src="<?php echo $urlHelper->js('vendor'); ?>"></script>
+			<script src="<?php echo $urlHelper->js('Sonoff'); ?>"></script>
+			<script src="<?php echo $urlHelper->js('app'); ?>"></script>
+		<?php } ?>
 
-
-		<link href="<?php echo $urlHelper->style('compiled/all'); ?>" rel="stylesheet">
+		<?php if ($hasCompiledCssAsset) { ?>
+			<link href="<?php echo $urlHelper->style('compiled/all'); ?>" rel="stylesheet">
+		<?php } elseif ($hasLegacyCssAsset) { ?>
+			<link href="<?php echo $urlHelper->style('all'); ?>" rel="stylesheet">
+		<?php } else { ?>
+			<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+			<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous">
+		<?php } ?>
 
 		<?php if (@file_exists(_RESOURCESDIR_.'css/custom.css')) { ?>
 			<link href="<?php echo $urlHelper->style('custom'); ?>" rel="stylesheet">
