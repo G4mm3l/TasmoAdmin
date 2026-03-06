@@ -1,10 +1,10 @@
 <?php
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
-use Symfony\Component\BrowserKit\HttpBrowser;
 use TasmoAdmin\Device;
 use TasmoAdmin\Helper\FirmwareFolderHelper;
 use TasmoAdmin\Helper\GuzzleFactory;
+use TasmoAdmin\Helper\HttpBrowserFactory;
 use TasmoAdmin\Helper\OtaHelper;
 use TasmoAdmin\Helper\TasmotaHelper;
 use TasmoAdmin\Helper\TasmotaOtaScraper;
@@ -156,7 +156,7 @@ if (isset($_REQUEST['upload'])) {
     $tasmotaHelper = new TasmotaHelper(
         new GithubFlavoredMarkdownConverter(),
         $client,
-        new TasmotaOtaScraper($Config->read('auto_update_channel'), new HttpBrowser()),
+        new TasmotaOtaScraper($Config->read('auto_update_channel'), HttpBrowserFactory::getClient($Config)),
         $Config->read('auto_update_channel')
     );
 
