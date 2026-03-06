@@ -1,15 +1,15 @@
 <?php
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
-use Symfony\Component\BrowserKit\HttpBrowser;
 use TasmoAdmin\Helper\GuzzleFactory;
+use TasmoAdmin\Helper\HttpBrowserFactory;
 use TasmoAdmin\Helper\TasmotaHelper;
 use TasmoAdmin\Helper\TasmotaOtaScraper;
 
 $tasmotaHelper = new TasmotaHelper(
     new GithubFlavoredMarkdownConverter(),
     GuzzleFactory::getClient($Config),
-    new TasmotaOtaScraper($Config->read('auto_update_channel'), new HttpBrowser()),
+    new TasmotaOtaScraper($Config->read('auto_update_channel'), HttpBrowserFactory::getClient($Config)),
     $Config->read('auto_update_channel')
 );
 $releaseNotes = $tasmotaHelper->getReleaseNotes();
