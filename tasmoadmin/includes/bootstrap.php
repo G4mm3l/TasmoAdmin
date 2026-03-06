@@ -47,7 +47,30 @@ global $loggedin, $docker;
 $loggedin = false;
 $docker = false;
 
-require_once _APPROOT_.'vendor/autoload.php';
+$autoloadCandidates = [
+    _APPROOT_.'vendor/autoload.php',
+    dirname(_APPROOT_).'/vendor/autoload.php',
+];
+
+$autoloadFile = null;
+foreach ($autoloadCandidates as $candidate) {
+    if (file_exists($candidate)) {
+        $autoloadFile = $candidate;
+
+        break;
+    }
+}
+
+if (null === $autoloadFile) {
+    header('HTTP/1.1 503 Service Unavailable');
+
+    echo 'ERROR: Composer dependencies are missing.';
+    echo ' Please run <code>cd '._APPROOT_.' && composer install --no-dev --optimize-autoloader</code> and restart web-server.';
+
+    exit;
+}
+
+require_once $autoloadFile;
 
 use Selective\Container\Container;
 use TasmoAdmin\Config;
