@@ -62,6 +62,47 @@ $hasLegacyCssAsset = file_exists(_RESOURCESDIR_.'css/all.css');
 			<script src="<?php echo $urlHelper->js('app'); ?>"></script>
 		<?php } ?>
 
+		<script type="application/javascript">
+			if (!(window.bootstrap && window.bootstrap.Dropdown)) {
+				document.addEventListener('DOMContentLoaded', function () {
+					const toggles = document.querySelectorAll('.navbar .dropdown-toggle');
+
+					const closeAll = function () {
+						document.querySelectorAll('.navbar .dropdown-menu.show').forEach(function (menu) {
+							menu.classList.remove('show');
+						});
+						toggles.forEach(function (toggle) {
+							toggle.setAttribute('aria-expanded', 'false');
+						});
+					};
+
+					toggles.forEach(function (toggle) {
+						toggle.addEventListener('click', function (event) {
+							event.preventDefault();
+
+							const menu = toggle.nextElementSibling;
+							if (!menu || !menu.classList.contains('dropdown-menu')) {
+								return;
+							}
+
+							const wasOpen = menu.classList.contains('show');
+							closeAll();
+							if (!wasOpen) {
+								menu.classList.add('show');
+								toggle.setAttribute('aria-expanded', 'true');
+							}
+						});
+					});
+
+					document.addEventListener('click', function (event) {
+						if (!event.target.closest('.navbar .dropdown')) {
+							closeAll();
+						}
+					});
+				});
+			}
+		</script>
+
 		<?php if ($hasCompiledCssAsset) { ?>
 			<link href="<?php echo $urlHelper->style('compiled/all'); ?>" rel="stylesheet">
 		<?php } elseif ($hasLegacyCssAsset) { ?>
