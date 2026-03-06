@@ -26,4 +26,15 @@ class OtaHelperTest extends TestCase
         $otaHelper = new OtaHelper($config, '/_BASEURL_/');
         self::assertEquals('http://192.168.1.1:8080/_BASEURL_/data/firmwares/my-firmware.bin', $otaHelper->getFirmwareUrl('path/to/my-firmware.bin'));
     }
+
+    public function testGetFirmwareUrlWithSsl(): void
+    {
+        $config = new Config($this->root->url().'/', $this->root->url().'/');
+        $config->write('ota_server_ip', '192.168.1.1');
+        $config->write('ota_server_port', '8443');
+        $config->write('enable_ssl', '1');
+
+        $otaHelper = new OtaHelper($config, '/_BASEURL_/');
+        self::assertEquals('https://192.168.1.1:8443/_BASEURL_/data/firmwares/my-firmware.bin', $otaHelper->getFirmwareUrl('path/to/my-firmware.bin'));
+    }
 }

@@ -42,6 +42,11 @@ if (isset($_POST['save'])) {
         $settings['update_newer_only'] = '0';
     }
 
+
+    if (!isset($settings['enable_ssl'])) {
+        $settings['enable_ssl'] = '0';
+    }
+
     if (empty($settings['password'])) {
         unset($settings['password']);
     } else {
@@ -180,6 +185,25 @@ $autoFirmwareChannels = ['stable', 'dev'];
 					</select>
 				</div>
 			</div>
+
+
+            <div class="row">
+                <div class="col col-12">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               value="1"
+                               id="enable_ssl"
+                               name='enable_ssl' <?php echo '1' == $config['enable_ssl'] ? 'checked="checked"' : ''; ?>>
+                        <label class="form-check-label" for="enable_ssl">
+                            <?php echo __('CONFIG_SERVER_ENABLE_SSL', 'USER_CONFIG'); ?>
+                        </label>
+                        <small class="text-body-secondary d-block">
+                            <?php echo __('CONFIG_SERVER_ENABLE_SSL_HELP', 'USER_CONFIG'); ?>
+                        </small>
+                    </div>
+                </div>
+            </div>
 
 
 			<div class="row  mt-5">

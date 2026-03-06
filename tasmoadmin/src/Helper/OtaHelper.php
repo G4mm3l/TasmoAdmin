@@ -24,8 +24,11 @@ class OtaHelper
 
     private function getOtaServer(): string
     {
+        $protocol = '1' === $this->config->read('enable_ssl') ? 'https' : 'http';
+
         return sprintf(
-            'http://%s:%s%s%s',
+            '%s://%s:%s%s%s',
+            $protocol,
             $this->config->read('ota_server_ip'),
             $this->config->read('ota_server_port'),
             $this->baseUrl,

@@ -34,6 +34,14 @@ class ConfigTest extends TestCase
         self::assertEquals('1', $config->read('hide_copyright'));
     }
 
+
+
+    public function testEnableSslDefaultsToDisabled(): void
+    {
+        $config = $this->getConfig();
+        self::assertEquals('0', $config->read('enable_ssl'));
+    }
+
     public function testReadEscaped(): void
     {
         $config = $this->getConfig();
