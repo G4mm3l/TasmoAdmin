@@ -47,7 +47,15 @@ global $loggedin, $docker;
 $loggedin = false;
 $docker = false;
 
-require_once _APPROOT_.'vendor/autoload.php';
+$autoloadFile = _APPROOT_.'vendor/autoload.php';
+if (!file_exists($autoloadFile)) {
+    echo 'ERROR: Composer dependencies are missing.';
+    echo ' Please run <code>composer install --no-dev --optimize-autoloader</code> in <code>'._APPROOT_.'</code> and restart web-server.';
+
+    exit;
+}
+
+require_once $autoloadFile;
 
 use Selective\Container\Container;
 use TasmoAdmin\Config;
