@@ -10,8 +10,10 @@ services:
       - TASMO_DEBUG=1
     volumes:
       - ./tasmoadmin:/var/www/tasmoadmin
+      - web_vendor:/var/www/tasmoadmin/vendor
       - ./.storage:/data/tasmoadmin
       - web_tmp:/var/www/tasmoadmin/tmp
 
 volumes:
+  web_vendor:
   web_tmp:
