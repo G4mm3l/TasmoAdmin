@@ -62,8 +62,6 @@ foreach ($autoloadCandidates as $candidate) {
 }
 
 if (null === $autoloadFile) {
-    header('HTTP/1.1 503 Service Unavailable');
-
     echo 'ERROR: Composer dependencies are missing.';
     echo ' Please run <code>cd '._APPROOT_.' && composer install --no-dev --optimize-autoloader</code> and restart web-server.';
 

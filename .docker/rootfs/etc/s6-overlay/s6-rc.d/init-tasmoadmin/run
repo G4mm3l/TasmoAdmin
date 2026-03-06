@@ -6,11 +6,20 @@
 # shellcheck disable=SC1091
 #source /usr/lib/hassio-addons/base.sh
 
+APP_BASEDIR='/var/www/tasmoadmin'
+APP_DIR="${APP_BASEDIR}"
+
+if [ ! -f "${APP_DIR}/index.php" ] && [ -f "${APP_BASEDIR}/tasmoadmin/index.php" ]; then
+    APP_DIR="${APP_BASEDIR}/tasmoadmin"
+    echo "Detected nested application directory at ${APP_DIR}."
+    sed -i 's@root /var/www/tasmoadmin/@root /var/www/tasmoadmin/tasmoadmin/@' /etc/nginx/nginx.conf
+fi
+
 # Setup structure if it does not exists
 if [ ! -d "/data/tasmoadmin" ]; then
     echo 'Data directory not initialized, doing that now...'
     mkdir -p /data/tasmoadmin
-    cp -Rv /var/www/tasmoadmin/data/* /data/tasmoadmin
+    cp -Rv "${APP_DIR}"/data/* /data/tasmoadmin
 fi
 
 # Migrating old structure to new structure
@@ -53,8 +62,8 @@ fi
 
 if [[ -z "${TASMO_DATADIR}" ]]; then
   echo 'Symlinking /data/tasmoadmin directory to persistent storage location...'
-  rm -f -r /var/www/tasmoadmin/data
-  ln -s /data/tasmoadmin /var/www/tasmoadmin/data
+  rm -f -r "${APP_DIR}"/data
+  ln -s /data/tasmoadmin "${APP_DIR}"/data
 else
     sed -i 's@location /data/firmwares {@location /data/firmwares {\n            alias '"$TASMO_DATADIR"'firmwares/;@' /etc/nginx/nginx.conf
 fi
@@ -64,14 +73,14 @@ chown -R nginx:nginx /data/tasmoadmin
 find /data/tasmoadmin -not -perm 0644 -type f -exec chmod 0644 {} \;
 find /data/tasmoadmin -not -perm 0755 -type d -exec chmod 0755 {} \;
 
-if [ ! -f "/var/www/tasmoadmin/.dockerenv" ]; then
+if [ ! -f "${APP_DIR}/.dockerenv" ]; then
     echo 'Docker env does not exist, doing that now...'
 
     # Create .docker
-    touch /var/www/tasmoadmin/.dockerenv
+    touch "${APP_DIR}"/.dockerenv
 
     # Ensure file permissions
-    chown -R nginx:nginx /var/www/tasmoadmin/.dockerenv
+    chown -R nginx:nginx "${APP_DIR}"/.dockerenv
 fi
 
-chown -R nginx:nginx /var/www/tasmoadmin/tmp
+chown -R nginx:nginx "${APP_DIR}"/tmp
