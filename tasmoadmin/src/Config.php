@@ -17,6 +17,7 @@ class Config
     private array $defaults = [
         'ota_server_ip' => '',
         'ota_server_port' => '',
+        'enable_ssl' => '0',
         'username' => '',
         'password' => '',
         'refreshtime' => '8',
