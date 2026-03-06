@@ -6,6 +6,33 @@
 # shellcheck disable=SC1091
 #source /usr/lib/hassio-addons/base.sh
 
+
+restore_nginx_conf() {
+  local config_path="$1"
+  local config_template="$2"
+  local backup_path="${config_path}.invalid.$(date +%s)"
+
+  if [ -f "$config_path" ]; then
+    cp -v "$config_path" "$backup_path"
+  fi
+
+  if [ -f "$config_template" ]; then
+    cp -v "$config_template" "$config_path"
+  elif [ -f /etc/nginx/nginx.conf.org ]; then
+    cp -v /etc/nginx/nginx.conf.org "$config_path"
+  fi
+}
+
+validate_nginx_conf() {
+  local config_path="$1"
+  local config_template="$2"
+
+  if ! nginx -t -q -c "$config_path"; then
+    echo "Invalid nginx config at ${config_path}, restoring default config..."
+    restore_nginx_conf "$config_path" "$config_template"
+  fi
+}
+
 # Setup structure if it does not exists
 if [ ! -d "/data/nginx" ]; then
   echo 'Data nginx directory not initialized, doing that now...'
@@ -24,6 +51,8 @@ if [[ -L "/data/nginx/nginx.conf" ]]; then
   cp -Rv /data/nginx/nginx.conf /etc/nginx/nginx.conf.org
 fi
 
+validate_nginx_conf /data/nginx/nginx.conf /data/nginx/nginx.conf.org
+
 echo 'Symlinking /etc/nginx.conf from persistent storage location...'
 rm -rf /etc/nginx/nginx.conf
 ln -s /data/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -32,6 +61,7 @@ declare certfile
 declare keyfile
 
 if ${SSL}; then
+    validate_nginx_conf /data/nginx/nginx-ssl.conf /etc/nginx/nginx-ssl.conf
     echo 'Symlinking /etc/nginx.conf to nginx-ssl.config on persistent storage...'
     rm -f -r /etc/nginx/nginx.conf
     ln -s /data/nginx/nginx-ssl.conf /etc/nginx/nginx.conf
